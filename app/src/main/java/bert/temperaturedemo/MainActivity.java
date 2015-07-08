@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import communicator.BertCommunicator;
+
 public class MainActivity extends ActionBarActivity {
 
     public static Handler timeUpdateHandler;
@@ -23,7 +25,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //FIXME new BertCommunicator();
+        new BertCommunicator();
 
         setContentView(R.layout.activity_main);
         ipEditText = (EditText) findViewById(R.id.IP_FIELD);
