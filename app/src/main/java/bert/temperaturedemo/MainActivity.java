@@ -9,7 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.net.InetAddress;
@@ -20,18 +23,36 @@ import communicator.bertMessages.BertMessage;
 import communicator.bertMessages.MessageHandlerThread;
 import communicator.bertMessages.BertMessageObserver;
 import communicator.bertMessages.variants.FT_Message;
+import communicator.commands.Command;
 import communicator.commands.CommandSequences;
+import communicator.utility.exceptions.InvalidCommandParameterException;
 
 public class MainActivity extends ActionBarActivity implements BertMessageObserver {
 
     public static Handler TEMP_UPDATE_HANDLER;
 
-    public static BertCommunicator bertCommunicator = new BertCommunicator();
+    static {
+        BertCommunicator.start();
+    }
 
     private EditText ipEditText;
+
+    private EditText setTempField;
+    private EditText highTempField;
+    private EditText lowTempField;
+
     private Button connectButton;
+    private Button calibrateTemperatureButton;
+    private RadioButton enableHighRadioButton;
+    private RadioButton disableHighRadioButton;
+    private RadioButton enableLowRadioButton;
+    private RadioButton disableLowRadioButton;
+
+
     private TextView temperatureDisplay;
-    private TextView timeDisplay;
+    private TextView updateDisplay;
+
+    private CheckBox isHeatingDeviceCheckBox;
 
     private InetAddress connectedDevice;
 
@@ -40,21 +61,78 @@ public class MainActivity extends ActionBarActivity implements BertMessageObserv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
         ipEditText = (EditText) findViewById(R.id.IP_FIELD);
-        connectButton = (Button) findViewById(R.id.BUTTON_CONNECT);
+        setTempField = (EditText) findViewById(R.id.tempSetpoint);
+        highTempField = (EditText) findViewById(R.id.highTempField);
+        lowTempField = (EditText) findViewById(R.id.lowTempField);
+
         temperatureDisplay = (TextView) findViewById(R.id.tempDisplay);
-        timeDisplay = (TextView) findViewById(R.id.timeDisplay);
+        updateDisplay = (TextView) findViewById(R.id.updateDisplay);
+
+        isHeatingDeviceCheckBox = (CheckBox) findViewById(R.id.isHeatingDevice);
+
+        connectButton = (Button) findViewById(R.id.BUTTON_CONNECT);
+        calibrateTemperatureButton = (Button) findViewById(R.id.BUTTON_CALIBRATE);
+
+        enableHighRadioButton = (RadioButton) findViewById(R.id.enableHigh);
+        enableLowRadioButton = (RadioButton) findViewById(R.id.enableLow);
 
         connectButton.setOnClickListener(new View.OnClickListener() {//TODO connect button currently sends a temp request
             @Override
             public void onClick(View v) {
                 try {
                     connectedDevice = InetAddress.getByName(ipEditText.getText().toString());
+                    connectButton.setBackgroundColor(getResources().getColor(R.color.LightGreen));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                     Log.e("MainActiviy", "Invalid IP Entered");
+                    connectedDevice = null;
+                    connectButton.setBackgroundColor(getResources().getColor(R.color.LightBlue));
+                }
+            }
+        });
+
+        calibrateTemperatureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (connectedDevice == null) return;
+
+                int highTemp = Integer.parseInt(highTempField.getText().toString());
+                int lowTemp = Integer.parseInt(lowTempField.getText().toString());
+                int setTemp = Integer.parseInt(setTempField.getText().toString());
+
+                if (setTemp > 99 | setTemp < 32) return;
+                if (highTemp > 99 | highTemp < 32) return;
+                if (lowTemp < 32 | lowTemp > 99) return;
+
+                if (highTemp <= lowTemp) {
+                    highTempField.setText("");
+                    lowTempField.setText("");
+                    return;
+                }
+
+                boolean isHeatingDevice = isHeatingDeviceCheckBox.isChecked();
+                boolean highEnable = enableHighRadioButton.isChecked();
+                boolean lowEnable = enableLowRadioButton.isChecked();
+
+                try {
+                    Command c = CommandSequences.setTemperatureConfiguration(
+                            setTemp,
+                            highEnable,
+                            highTemp,
+                            lowEnable,
+                            lowTemp,
+                            isHeatingDevice
+                    );
+                    BertCommunicator.COMMAND_QUEUE_MAP.get(connectedDevice).addCommand(c);
+                    Log.d("Activity", "Sent temp calibration command");
+                } catch (InvalidCommandParameterException e) {
+                    highTempField.setText("");
+                    lowTempField.setText("");
+                    setTempField.setText("");
+                    return;
                 }
             }
         });
@@ -65,7 +143,7 @@ public class MainActivity extends ActionBarActivity implements BertMessageObserv
                 Bundle data = msg.getData();
                 temperatureDisplay.setText(String.valueOf(data.getInt("Temp")));
                 updateCounter++;
-                timeDisplay.setText(String.valueOf(updateCounter));
+                updateDisplay.setText(String.valueOf(updateCounter));
             }
         };
 
@@ -95,7 +173,7 @@ public class MainActivity extends ActionBarActivity implements BertMessageObserv
 
     @Override
     public void onBertMessage(BertMessage message) {
-        if (message.getOpCode().equals("FT")) {
+        if (message.getOpCode().equals("FT") && message.deviceIP.equals(connectedDevice)) {
             Bundle bundle = new Bundle();
 
             FT_Message ftm = (FT_Message) message;

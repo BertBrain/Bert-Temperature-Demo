@@ -1,4 +1,15 @@
 <resources>
+    <color name="LightGreen">#8AC45E</color>
+    <color name="DarkGreen">#1C3C03</color>
+
+    <color name="LightRed">#FFAB9E</color>
+    <color name="DarkRed">#772417</color>
+
+    <color name="LightOrange">#fff5d226</color>
+    <color name="DarkOrange">#ffb06e25</color>
+
+    <color name="LightBlue">#ff83e0f5</color>
+    <color name="DarkBlue">#ff1869f2</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">

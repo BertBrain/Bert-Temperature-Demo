@@ -34,7 +34,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/IP_FIELD"
                 android:layout_column="1"
-                android:layout_row="0" />
+                android:layout_row="0"
+                android:inputType="phone" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -46,12 +47,29 @@
 
         </GridLayout>
 
+
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:columnCount="2"
-            android:rowCount="3"
+            android:rowCount="6"
             android:id="@+id/Calibration">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Temp Setpoint:"
+                android:id="@+id/textView2"
+                android:layout_row="0"
+                android:layout_column="0" />
+
+            <EditText
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/tempSetpoint"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:inputType="number" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -59,7 +77,7 @@
                 android:text="High Temp"
                 android:id="@+id/highTempLabel"
                 android:layout_column="0"
-                android:layout_row="0" />
+                android:layout_row="1" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -67,7 +85,7 @@
                 android:text="Low Temp"
                 android:id="@+id/lowTempLabel"
                 android:layout_column="1"
-                android:layout_row="0" />
+                android:layout_row="1" />
 
             <EditText
                 android:layout_width="150dp"
@@ -76,92 +94,122 @@
                 android:ems="10"
                 android:id="@+id/highTempField"
                 android:layout_column="0"
-                android:layout_row="1" />
+                android:layout_row="2" />
 
             <EditText
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:inputType="number"
                 android:ems="10"
-                android:id="@+id/lowTempField" />
+                android:id="@+id/lowTempField"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:inputType="number" />
 
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/highTempActions"
                 android:layout_column="0"
-                android:layout_row="2">
+                android:layout_row="3">
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Enable at Temp"
-                    android:id="@+id/highTempEnable"
+                    android:text="On at Temp"
+                    android:id="@+id/enableHigh"
                     android:checked="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Disable at Temp"
-                    android:id="@+id/highTempDisable" />
+                    android:text="Off at Temp"
+                    android:id="@+id/disableHigh"
+                    android:checked="true" />
             </RadioGroup>
 
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/lowTempActions">
+                android:layout_row="3"
+                android:layout_column="1">
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Enable at Temp"
-                    android:id="@+id/lowTempEnable"
+                    android:text="On at Temp"
+                    android:id="@+id/enableLow"
                     android:checked="false" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Disable at Temp"
-                    android:id="@+id/lowTempDisable"
-                    android:checked="false" />
+                    android:text="Off at Temp"
+                    android:id="@+id/disableLow"
+                    android:checked="true" />
             </RadioGroup>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Is Heating Device"
+                android:id="@+id/isHeatingDevice"
+                android:checked="false"
+                android:layout_column="0"
+                android:layout_row="5" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:text="Calibrate Temperature"
+                android:id="@+id/BUTTON_CALIBRATE"
+                android:layout_row="5"
+                android:layout_column="1" />
 
         </GridLayout>
 
-        <Button
-            android:layout_width="fill_parent"
+        <GridLayout
+            android:layout_marginTop="40dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Calibrate Temperature"
-            android:id="@+id/BUTTON_CALIBRATE"
-            android:layout_row="1"
-            android:layout_column="0" />
+            android:id="@+id/UPDATE_DISPLAY"
+            android:columnCount="2"
+            android:rowCount="2">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Temperature"
-            android:id="@+id/TempLabel" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Temperature:     "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/TempLabel"
+                android:layout_column="0"
+                android:layout_row="0" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="tempDisplay"
-            android:id="@+id/tempDisplay" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="tempDisplay"
+                android:id="@+id/tempDisplay"
+                android:layout_column="1"
+                android:layout_row="0" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Time"
-            android:id="@+id/textView" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update Counter:"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/textView"
+                android:layout_row="1"
+                android:layout_column="0" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="timeDisplay"
-            android:id="@+id/timeDisplay" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="0"
+                android:id="@+id/updateDisplay"
+                android:layout_row="1"
+                android:layout_column="1" />
+        </GridLayout>
 
     </LinearLayout>
 
