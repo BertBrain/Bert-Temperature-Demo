@@ -24,6 +24,7 @@ import communicator.bertMessages.MessageHandlerThread;
 import communicator.bertMessages.BertMessageObserver;
 import communicator.bertMessages.variants.FT_Message;
 import communicator.commands.Command;
+import communicator.commands.CommandQueue;
 import communicator.commands.CommandSequences;
 import communicator.utility.exceptions.InvalidCommandParameterException;
 
@@ -44,9 +45,7 @@ public class MainActivity extends ActionBarActivity implements BertMessageObserv
     private Button connectButton;
     private Button calibrateTemperatureButton;
     private RadioButton enableHighRadioButton;
-    private RadioButton disableHighRadioButton;
     private RadioButton enableLowRadioButton;
-    private RadioButton disableLowRadioButton;
 
 
     private TextView temperatureDisplay;
@@ -126,7 +125,7 @@ public class MainActivity extends ActionBarActivity implements BertMessageObserv
                             lowTemp,
                             isHeatingDevice
                     );
-                    BertCommunicator.COMMAND_QUEUE_MAP.get(connectedDevice).addCommand(c);
+                    CommandQueue.addCommandToQueue(connectedDevice, c);
                     Log.d("Activity", "Sent temp calibration command");
                 } catch (InvalidCommandParameterException e) {
                     highTempField.setText("");
@@ -189,7 +188,7 @@ public class MainActivity extends ActionBarActivity implements BertMessageObserv
             TEMP_UPDATE_HANDLER.sendMessage(msg);
         } else if (message.getOpCode().equals("HB")) {
             if (connectedDevice != null) {
-                MessageHandlerThread.addCommandToQueue(connectedDevice, CommandSequences.getTemperature());
+                CommandQueue.addCommandToQueue(connectedDevice, CommandSequences.getTemperature());
             }
         }
     }
